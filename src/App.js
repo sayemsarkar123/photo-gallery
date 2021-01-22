@@ -12,25 +12,29 @@ const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     (async () => {
-      const response = await fetch('http://localhost:3004/albums');
-      const result = await response.json();
-      dispatch(addAlbums(result));
+      const fetchData = async (URL) => {
+        const response = await fetch(URL);
+        return response.json();
+      };
+      try {
+        const albums = await fetchData('http://localhost:3004/albums');
+        dispatch(addAlbums(albums));
+        const comments = await fetchData('http://localhost:3004/comments');
+        dispatch(addComments(comments));
+      } catch (e) {
+        console.error(e);
+      }
     })();
-    (async () => {
-      const response = await fetch('http://localhost:3004/comments');
-      const result = await response.json();
-      dispatch(addComments(result));
-    })()
   }, [dispatch]);
   return (
     <Router>
-      <Header/>
+      <Header />
       <Switch>
-        <Route exact path='/' component={Home}/>
-        <Route exact path='/:albumId' component={Galleries} />
-        <Route exact path='/:albumId/:galleryId' component={Photos}/>
+        <Route exact path="/" component={Home} />
+        <Route exact path="/:albumId" component={Galleries} />
+        <Route exact path="/:albumId/:galleryId" component={Photos} />
       </Switch>
-      <Footer/>
+      <Footer />
     </Router>
   );
 };

@@ -27,7 +27,7 @@ const schema = yup.object({
 const Photos = () => {
   const { albumId, galleryId } = useParams();
   const albums = useSelector((state) => state.albums);
-  const comments = useSelector(state => state.comments);
+  const comments = useSelector((state) => state.comments);
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const [photo, setPhoto] = useState({});
@@ -39,19 +39,21 @@ const Photos = () => {
   const { register, handleSubmit, errors, reset } = useForm({
     resolver: yupResolver(schema),
   });
-  const onSubmit = (data) => {
-    (async () => {
-      const response = await fetch('http://localhost:3004/comments', {
-        method: 'POST',
-        body: JSON.stringify({commentId: `${albumId}${galleryId}${photo.id}${comments.length}`, ...data, createdAt: new Date().toISOString()}),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      const result = await response.json();
-      dispatch(addComment(result));
-      reset();
-    })()
+  const onSubmit = async (data) => {
+    const response = await fetch('http://localhost:3004/comments', {
+      method: 'POST',
+      body: JSON.stringify({
+        commentId: `${albumId}${galleryId}${photo.id}${comments.length}`,
+        ...data,
+        createdAt: new Date().toISOString(),
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const result = await response.json();
+    dispatch(addComment(result));
+    reset();
   };
   return (
     <Container>
@@ -76,16 +78,22 @@ const Photos = () => {
             </Col>
             <Col className="ml-auto" md={5}>
               <Row>
-                {
-                  comments.filter(comment => comment.commentId.startsWith(`${albumId}${galleryId}${photo.id}`)).map(({commentId, name, createdAt, comment}) => (
+                {comments
+                  .filter((comment) =>
+                    comment.commentId.startsWith(
+                      `${albumId}${galleryId}${photo.id}`
+                    )
+                  )
+                  .map(({ commentId, name, createdAt, comment }) => (
                     <Col key={commentId} md={12}>
                       <h6 className="mb-0">{name}</h6>
-                      <small>{dateFormat(createdAt, "dddd, mmmm dS, yyyy, h:MM TT")}</small>
+                      <small>
+                        {dateFormat(createdAt, 'dddd, mmmm dS, yyyy, h:MM TT')}
+                      </small>
                       <p className="mt-2 mb-0">{comment}</p>
-                      <hr/>
+                      <hr />
                     </Col>
-                  ))
-                }
+                  ))}
               </Row>
               <h5>Share Your Comments & Feedback</h5>
               <Form noValidate onSubmit={handleSubmit(onSubmit)}>

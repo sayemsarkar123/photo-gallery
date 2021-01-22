@@ -5,5 +5,7 @@ import photosSlice from './features/photos/photosSlice';
 export default configureStore({
   reducer: photosSlice,
   devTools: true,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    immutableCheck: false
+  }).concat(logger),
 });
